@@ -1,0 +1,41 @@
+version: '3'
+
+# Usage :
+# $ xhost local:root
+# $ docker-compose up -d
+#
+# Show errors
+# $ docker-compose logs -f
+#
+# Start bash session inside container
+# $ docker-compose run electron bash
+#
+# Stop container
+# $ docker-compose down
+
+services:
+
+  electron:
+    build:
+      context: $PWD
+      dockerfile: $PWD/.docker/Dockerfile
+    image: open_sc2k:v1
+    restart: "no"
+    entrypoint:
+      - "/bin/sh"
+      - "/root/entrypoint.sh"
+    command:
+      - "npm"
+      - "start"
+    volumes:
+      - "$PWD:/app"
+      - "$PWD/.docker/.bashrc:/root/.bashrc"
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+      - "/dev/shm:/dev/shm"
+    shm_size: 1024m
+    environment:
+      - "DISPLAY=unix$DISPLAY"
+    devices:
+      - "/dev/snd"
+    security_opt:
+      - "seccomp=unconfined"
